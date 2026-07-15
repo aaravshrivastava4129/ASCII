@@ -4,9 +4,22 @@ import time
 import shutil
 import sys
 import numpy as np
+from moviepy import VideoFileClip
+import pygame
+
+ASCII_CHARS = np.array(list("@"))
+
+def play_audio():
+    pygame.mixer.init()
+    pygame.mixer.music.load(audio_file)
+    pygame.mixer.music.play()
 
 
-ASCII_CHARS = np.array(list(" `.-':_,^=;><+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Wg0MNBQ%&@"))
+def audio_delete():
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+    pygame.mixer.quit()
+    os.remove(audio_file)
 
 
 def detect_crop(frame):
@@ -177,4 +190,11 @@ def play_video(video_path):
 
 if __name__ == "__main__":
     video_path = "Dannawada Mawa.mp4"
+    audio_file = "temp_audio.mp3"
+
+    clip = VideoFileClip(video_path)
+    clip.audio.write_audiofile(audio_file, logger=None)  
+ 
+    play_audio() 
     play_video(video_path)
+    audio_delete()
