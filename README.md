@@ -1,12 +1,13 @@
-﻿# 🎬 ASCII Video Player
+# 🎬 ASCII Video Player
 
-A terminal-based video player that converts any MP4 video into **colorful ASCII art** and plays it directly in your terminal — in real time!
+A terminal-based video player that converts any MP4 video into **colorful ASCII art** and plays it directly in your terminal — with **synchronized audio** — in real time!
 
 ---
 
 ## ✨ Features
 
 - 🎨 **Full-color ASCII rendering** using 24-bit RGB ANSI escape codes
+- 🔊 **Synchronized audio playback** — extracts and plays audio alongside the video
 - ⚡ **Real-time frame conversion** with edge detection (Sobel filter) for sharper character mapping
 - 📐 **Dynamic terminal resizing** — adapts to your terminal window size every 30 frames
 - ✂️ **Smart auto-crop** — automatically detects and removes black bars (letterboxing)
@@ -17,15 +18,19 @@ A terminal-based video player that converts any MP4 video into **colorful ASCII 
 
 ## 📦 Requirements
 
-- Python 3.7+
+- Python 3.8+
 - [OpenCV](https://pypi.org/project/opencv-python/) (`cv2`)
 - [NumPy](https://pypi.org/project/numpy/)
+- [MoviePy](https://pypi.org/project/moviepy/) — for audio extraction
+- [pygame-ce](https://pypi.org/project/pygame-ce/) — for audio playback
 
-Install dependencies:
+Install all dependencies:
 
 ```bash
-pip install opencv-python numpy
+pip install opencv-python numpy moviepy pygame-ce
 ```
+
+> **Note:** On Python 3.12+, use `pygame-ce` instead of `pygame` — it has pre-built wheels for newer Python versions.
 
 ---
 
@@ -52,14 +57,16 @@ python ascii_player.py
 
 | Step | Description |
 |------|-------------|
-| **1. Frame Read** | Each frame is read from the video using OpenCV |
-| **2. Auto-Crop** | Black bars are detected and removed from top/bottom |
-| **3. Resize** | Frame is scaled to fit the current terminal dimensions |
-| **4. CLAHE Enhancement** | Contrast is boosted in LAB color space for better detail |
-| **5. Edge Boost** | Sobel filter adds edge intensity to pixel brightness |
-| **6. Char Mapping** | Brightness values are mapped to a 90-character ASCII palette |
-| **7. Color Coding** | Each character is wrapped in a 24-bit ANSI color code |
-| **8. Render** | The full frame is written to stdout in one flush |
+| **1. Audio Extract** | MoviePy extracts audio from the video to a temp MP3 file |
+| **2. Audio Playback** | pygame-ce loads and plays the audio in the background |
+| **3. Frame Read** | Each video frame is read in sync using OpenCV |
+| **4. Auto-Crop** | Black bars are detected and removed from top/bottom |
+| **5. Resize** | Frame is scaled to fit the current terminal dimensions |
+| **6. CLAHE Enhancement** | Contrast is boosted in LAB color space for better detail |
+| **7. Edge Boost** | Sobel filter adds edge intensity to pixel brightness |
+| **8. Char Mapping** | Brightness values are mapped to a 90-character ASCII palette |
+| **9. Color Coding** | Each character is wrapped in a 24-bit ANSI color code |
+| **10. Render** | The full frame is written to stdout in one flush |
 
 ---
 
@@ -68,7 +75,7 @@ python ascii_player.py
 The player uses a gradient of **90 characters**, ordered from darkest to brightest:
 
 ```
- `.-':_,^=;<>+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Wg0MNBQ%&@
+ `.-':_,^=;><+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Wg0MNBQ%&@
 ```
 
 ---
@@ -91,6 +98,7 @@ You can tweak these values inside `ascii_player.py` to adjust the output:
 - For best results, use a terminal with a **small font size** and **dark background**.
 - **Windows Terminal** with PowerShell or CMD works great.
 - The video file path is currently hardcoded — you can modify `ascii_player.py` to accept a command-line argument.
+- Audio is extracted to a temporary `temp_audio.mp3` file during playback and deleted automatically when done.
 
 ---
 
